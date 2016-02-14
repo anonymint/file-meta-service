@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Uploda file</title>
+</head>
+<body>
+	<p>Please make sure the file size is not over <strong>5M</strong></p>
+	<form id="file-form" enctype="multipart/form-data">
+		<input type="file" name="uploadfile" />
+		<input type="submit" value="Upload" />
+	</form>
+	<div id="result"></div>
+	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function() {
+
+			var files;
+			$('input[type=file]').on('change', function(event) {
+				files = event.target.files;
+			});
+
+			$('form').on('submit',function(event) {
+
+				event.stopPropagation();
+				event.preventDefault();
+
+				//create form data
+				var data = new FormData();
+				$.each(files, function(key, value) {
+					data.append(key, value);
+				});
+
+				$.ajax({
+					url: window.location.origin + '/api/upload',
+					type: 'POST',
+					data: data,
+					cache: false,
+					processData: false,
+					contentType: false,
+					error: function(jqXHR, textStatus, errorThrown) {
+						alert('ERRORS: ' + textStatus);
+					},
+					success: function(data) {
+						console.log(data);
+						console.log(data.fileDetails);
+						$('#result')
+						.html(
+							"<h3>File Uploaded completed</h3>"+
+							"<p><strong>file name:</strong>"+data.fileName+"</p>"+
+							"<p><strong>file size:</strong>"+data.fileSize+"</p>"
+							);
+					}
+				});
+			});
+		});
+	</script>
+</body>
+</html>
